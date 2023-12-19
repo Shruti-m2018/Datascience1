@@ -1,0 +1,132 @@
+
+
+ Stock market data analysis using sql 
+
+ 
+create database stock_market;
+
+use database stock_market;
+
+import the data using import option in tables in user interface 
+
+
+select * from bhartiairtel
+select * from maruti
+select * from ultracement
+
+
+
+alter table 
+add coloumn new_Date date;
+
+
+
+
+# find the volatility of all companies and compare them --
+
+  formula used -Average(Dayhigh-Daylow)over a period of time 
+
+ drop view A1
+
+ create view A1 as ( select symbol , high , low from Aapl 
+ union 
+
+ select symbol ,high, low from Msft
+
+union 
+
+ select symbol ,high, low from Goog
+
+union 
+
+ select high,low from Nflx );
+
+
+select * from A1;
+
+select symbol , round (avg(high-low),2) as avg_volatility , dense_rank()over (order by avg (high-low) asc) 
+as ranking from A1
+groupby symbol;
+
+
+outout---bhartiairtel is the least volatile stock and maruti is the most volatile 
+
+
+q2-- which stock fell least durting the covid time , time period --20 feb 2020 --23 march 2020
+
+
+# find the fall in stock price of maruti
+
+  #formula used --percent increase =final value-intial value *100/ intial value 
+
+set @pre_covid-price_maruti= (select close from maruti where new_date="2020-02-20");
+
+set @post_covid-price_maruti= (select close from maruti where new_date="2023-03-23");
+
+select @pre_covid_price_maruti
+select @post_covid_price_maruti
+
+select round (((-@pre_covid-price_maruti+@post_covid-price_maruti)/@pre_covid-price_maruti),5)*100 as maruti
+
+
+# Recovery Days ----
+
+
+ select timestampdiff(day,"2020-03-23",@date_close_more_than_previous_maruti) as 
+ number_of_days_required_by_Aapl
+
+
+outout--bhartiairtel has the least recoverydays and ultracement has the highest recovery days 
+  
+ 
+# find the Compound Annua  growth Rate ---
+
+  CAGR= (Ending value / Beginning Value )1/n -1 *100
+
+  
+ # CAGR Calculation ---
+
+
+    set @begin_price_maruti = select close from maruti where new_date="04-01-2010" );
+    set @end_price_maruti=(select close from maruti where new_date= "30-040-2021"  );
+
+    select @begin_price_Aapl ; # price as on 
+    select @end_price_Aapl; # price as on 
+
+    set @number_of_years= (select round(timestampdiff(day," 2010-01-04","2021-04-30") /365,3));
+    
+    select round((power((@end_price_Aapl/@begin_price_Aapl),(1/@number_of_years))-1)*100,4) as Aapl CAGR;
+
+
+  output--ultracement is the highest which is better than the airtel which is lowest cagr 
+
+
+  # maximum volume month ---
+
+   select symbol ,year (new_date) as year ,month(new_date) as month, max(volume) as maximum volume from Aapl
+   groupby year (new_date),month(new_date)
+   orderby max(volume) desc
+   limit 1;
+
+
+  output--bhartiairtel have in feb 2021, maruti in nov 2015 and ultracement have in nov 2016 the max volume 
+  
+
+  # FINAL SCORE AND WEIGHTAGE 
+
+   select symbol, sum (round(score*weightage),10)) as final score from score_table st inner join weightage wt on st.description =wt.description
+   groupby symbol
+   orderby final_score desc;
+
+  
+   output--finalscore maruti 1.5, bhartiairtel 1.9 and ultracemt 2   
+  
+
+  
+
+
+
+
+
+
+
